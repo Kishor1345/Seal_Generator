@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://kishor1345.github.io/Seal_Generator",
+  "homepage": "https://kishor1345.github.io/ySeal_Generator",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
