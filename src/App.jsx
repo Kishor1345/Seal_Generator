@@ -16,6 +16,47 @@ export default function App() {
   const [regNo, setRegNo] = useState("");
   const [language, setLanguage] = useState("en");
 
+  // Universal Translate Function
+  const translateText = async (text, sourceLang, targetLang) => {
+    if (!text || sourceLang === targetLang) return text;
+
+    const response = await fetch(
+      `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(
+        text
+      )}`
+    );
+
+    const data = await response.json();
+    return data[0].map((item) => item[0]).join("");
+  };
+
+  //  Convert All Fields
+  const handleTranslate = async (targetLang) => {
+    const translatedCompany = await translateText(
+      companyName,
+      language,
+      targetLang
+    );
+
+    const translatedBottom = await translateText(
+      bottomText,
+      language,
+      targetLang
+    );
+
+    const translatedLabel = await translateText(
+      regLabel,
+      language,
+      targetLang
+    );
+
+    setCompanyName(translatedCompany);
+    setBottomText(translatedBottom);
+    setRegLabel(translatedLabel);
+    setLanguage(targetLang);
+  };
+
+  //  Download High Quality PNG
   const downloadPNG = () => {
     const svg = document.getElementById("sealSvg");
     const serializer = new XMLSerializer();
@@ -75,22 +116,24 @@ export default function App() {
           sx={{ mb: 2 }}
         >
           <MenuItem value="en">English</MenuItem>
-          <MenuItem value="ta">Tamil</MenuItem>
           <MenuItem value="hi">Hindi</MenuItem>
+          <MenuItem value="ta">Tamil</MenuItem>
         </TextField>
 
-        {/* Language Hint */}
-        {language === "ta" && (
-          <Typography color="secondary" sx={{ mb: 2 }}>
-            Press Windows + Space and switch to Tamil keyboard
-          </Typography>
-        )}
+        {/* Translate Buttons */}
+        <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+          <Button variant="outlined" onClick={() => handleTranslate("en")}>
+            Convert to English
+          </Button>
 
-        {language === "hi" && (
-          <Typography color="secondary" sx={{ mb: 2 }}>
-            Press Windows + Space and switch to Hindi keyboard
-          </Typography>
-        )}
+          <Button variant="outlined" onClick={() => handleTranslate("hi")}>
+            Convert to Hindi
+          </Button>
+
+          <Button variant="outlined" onClick={() => handleTranslate("ta")}>
+            Convert to Tamil
+          </Button>
+        </Box>
 
         {/* Inputs */}
         <TextField
@@ -98,7 +141,6 @@ export default function App() {
           label="Top Curved Text"
           value={companyName}
           onChange={(e) => setCompanyName(e.target.value)}
-          inputProps={{ lang: language }}
           sx={{ mb: 2 }}
         />
 
@@ -107,16 +149,14 @@ export default function App() {
           label="Bottom Curved Text"
           value={bottomText}
           onChange={(e) => setBottomText(e.target.value)}
-          inputProps={{ lang: language }}
           sx={{ mb: 2 }}
         />
 
         <TextField
           fullWidth
-          label="Center Label (Ex: Reg No)"
+          label="Center Label"
           value={regLabel}
           onChange={(e) => setRegLabel(e.target.value)}
-          inputProps={{ lang: language }}
           sx={{ mb: 2 }}
         />
 
